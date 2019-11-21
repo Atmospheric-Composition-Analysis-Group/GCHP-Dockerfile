@@ -48,5 +48,10 @@ RUN source /spack/share/spack/setup-env.sh \
 RUN echo "spack load netcdf" >> /init.rc \
 &&  echo "spack load netcdf-fortran" >> /init.rc \ 
 &&  echo "spack load openmpi" >> /init.rc \ 
-&&  echo "export PATH=$PATH:/opt/gchp/bin" >> /init.rc \ 
-&&  echo "source /init.rc" >> /etc/bash.bashrc
+&&  echo "export PATH=$PATH:/opt/gchp/bin" >> /init.rc
+
+RUN echo "#!/usr/bin/env bash" > /usr/bin/start-container.sh \
+&&  echo ". /init.rc" >> /usr/bin/start-container.sh \
+&&  echo 'if [ $# -gt 0 ]; then exec "$@"; else /bin/bash ; fi' >> /usr/bin/start-container.sh \
+&&  chmod +x /usr/bin/start-container.sh
+ENTRYPOINT ["start-container.sh"]
